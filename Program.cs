@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,12 +48,12 @@ namespace SharpOXID_Find
 
             mask = ~(0xffffffff >> bits);
 
-            
+
             network = ip & mask;
             broadcast = network + ~mask;
             uint usableIps = (bits > 30) ? 0 : (broadcast - network - 1);
-            Console.WriteLine("[+] ip range {0} - {1} " , IntToIp(network + 1), IntToIp(broadcast - 1));
-            for (uint i = 1; i < usableIps+1; i++)
+            Console.WriteLine("[+] ip range {0} - {1} ", IntToIp(network + 1), IntToIp(broadcast - 1));
+            for (uint i = 1; i < usableIps + 1; i++)
             {
                 //Console.WriteLine(IntToIp(network + i));
                 iparrays.Add(IntToIp(network + i));
@@ -96,7 +96,7 @@ namespace SharpOXID_Find
             try
             {
                 ip = ip.Trim();
-               // Console.WriteLine(ip);
+                // Console.WriteLine(ip);
                 foreach (string s in Network2IpRange(ip))
                 {
                     arrayList.Add(new threadStart(s));
@@ -104,16 +104,16 @@ namespace SharpOXID_Find
                 }
                 Thread[] array = new Thread[arrayList.Count];
                 for (int j = 0; j < arrayList.Count; j++)
-                  {
-                array[j] = new Thread(new ThreadStart(((threadStart)arrayList[j]).method_0));
-                array[j].Start();
-                  }
+                {
+                    array[j] = new Thread(new ThreadStart(((threadStart)arrayList[j]).method_0));
+                    array[j].Start();
+                }
                 for (int j = 0; j < array.Length; j++)
-                  {
-                      array[j].Join();
-                  }
-                 GC.Collect();
-                 arrayList.Clear();
+                {
+                    array[j].Join();
+                }
+                GC.Collect();
+                arrayList.Clear();
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace SharpOXID_Find
             }
             return builder.ToString();
         }
- 
+
         /// <summary>
         /// 16 进制转 byte[] 数组
         /// </summary>
@@ -160,9 +160,9 @@ namespace SharpOXID_Find
 
         public static void OXID(string ip)
         {
-            
+
             string host = ip;
-            try 
+            try
             {
                 byte[] response_v0 = new byte[1024];
                 using (var sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
@@ -177,17 +177,24 @@ namespace SharpOXID_Find
                 String response_v1 = Byte2Hex(response_v0.Skip(40).ToArray());
                 String response_v2 = response_v1.Substring(0, int.Parse(response_v1.IndexOf("9 0 ff ff 0").ToString()));
                 String[] hostname_list = response_v2.Split(new string[] { "0 0 0 " }, StringSplitOptions.RemoveEmptyEntries);
-                Console.WriteLine("\n[*] Retrieving network interfaces of {0}", host);
+                //Console.WriteLine("\n[*] Retrieving network interfaces of {0}", host);
+                string outprintf = "\n[*] Retrieving network interfaces of  " + host ;
                 for (int i = 0; i < hostname_list.Length - 1; i++)
                 {
-                    Console.WriteLine("  [>] Address: " + Encoding.Default.GetString(Hex2Byte(hostname_list[i].Replace(" 0", ""))));
+                    outprintf = outprintf + "\n  [>] Address:" + Encoding.Default.GetString(Hex2Byte(hostname_list[i].Replace(" 0", "")));
                 }
-            } 
+                Console.WriteLine(outprintf);
+            }
             catch (Exception ex)
             {
-               // Console.WriteLine("[!] Error: {0}", ex.Message);
+                // Console.WriteLine("[!] Error: {0}", ex.Message);
             }
-            
+
+        }
+
+        private static void sleep(int v)
+        {
+            throw new NotImplementedException();
         }
 
         static void Main(string[] args)
@@ -208,6 +215,6 @@ namespace SharpOXID_Find
 
             Console.WriteLine("Finish!");
         }
-       
+
     }
 }
